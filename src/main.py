@@ -1,19 +1,11 @@
-from typing import Optional
-
-import typer
-
-from identicon_service import IdenticonService
-
-app = typer.Typer()
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
 
 
-@app.command()
-def create_identicon(username: str, filepath: Optional[str] = typer.Argument('identicons')):
-    service = IdenticonService.load()
-    identicon = service.create_user_identicon(username)
-    service.write_identicon_to_file(username, identicon, filepath)
-    service.save()
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=0)
 
+gnb = GaussianNB()
 
-if __name__ == "__main__":
-    app()
+y_pred = gnb.fit(X_train, y_train).predict(X_test)
+print("Number of mislabeled points out of a total %d points : %d" % (X_test.shape[0], (y_test != y_pred).sum()))
+
